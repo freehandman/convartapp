@@ -1,7 +1,6 @@
-
 self.importScripts('src/js/idb.js');
 
-// 1
+// 2
 
 // Caching App 
 const convartAppStaticCache = 'static-AppCache';
