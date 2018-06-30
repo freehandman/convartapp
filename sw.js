@@ -15,12 +15,12 @@ self.addEventListener('install', event => {
     caches.open(convartAppStaticCache).then(cache => {
       return cache.addAll([
         '/',
-        '/index.html',
         'src/js/idb.js',
         'src/js/app.js',
         'src/css/app.css'
       ]);
-    }))
+    })
+  )
     // .then(function(){
 
       // // Caching curency Data
