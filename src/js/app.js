@@ -1,41 +1,21 @@
-window.onload = appSetup;
+// window.onload = appSetup;
 const getDB = getDatabase();
 
 const setuapp = document.getElementById('setupapp');
 
-setuapp.addEventListener('click', appSetup());
+// console.log(setuapp);
 
 // Registering Service Worker
 if(navigator.serviceWorker){
   navigator.serviceWorker.register('sw.js')
-  .then(function (reg) {
-     console.log('Service Worker Resistered!');
-  })
+  .then(reg => console.log('Service Worker Resistered!'))
 }
 
-// Creating a idb
-function getDatabase() {
-  if (!navigator.serviceWorker) {
-    return Promise.resolve();
-  }
-
-  return idb.open('appDataBase', 1, upgradeDb => {
-    const curencies = upgradeDb.createObjectStore('currencies');
-    const rates = upgradeDb.createObjectStore('rates');
-  });
-}
-
-
-
-// App SetUp
-
-function appSetup() {
-
-
-
+setuapp.addEventListener('click', event => {
+  launchLoad();
   fetch('https://free.currencyconverterapi.com/api/v5/currencies')
     .then( res => {
-
+      console.log('We Are Ready To Setup Your App!');
       res.json().then(data => {
         for(const results in data){
           if(data.hasOwnProperty(results)){
@@ -61,32 +41,85 @@ function appSetup() {
               }
               
             }
+
+            console.log('All Good AppData Setup Complete! Enjoy');
             
             return;
           }
         }
       });
   })
-  .catch(err => appSetup());
+  .catch(err => {
+    console.log(err);
+    appSetup();
+  });
+});
 
 
-  // // Get data from idb
-  // getDB.then( db => {
-  //   if(db){
-  //     // alert('iIm in');
-  //     const tranx = db.transaction(['currencies'], 'readwrite');
-  //     const currencyStore = tranx.objectStore('currencies');
-      
-  //     return currencyStore.getAll()
-  //     .then(curencies => {
-  //       for(const data of curencies){
-  //         createSelectOptions(data);
-  //       }
-  //     });
-      
-  //   }
-    
-  // })
+function launchLoad() {
+  const welcome = document.getElementById('welcome');
+  welcome.style.display = 'none';
+}
+
+// Creating a idb
+function getDatabase() {
+  if (!navigator.serviceWorker) {
+    return Promise.resolve();
+  }
+
+  return idb.open('appDataBase', 1, upgradeDb => {
+    const curencies = upgradeDb.createObjectStore('currencies');
+    const rates = upgradeDb.createObjectStore('rates');
+  });
+}
+
+
+
+// App SetUp
+
+function appSetup() {
+  
+  fetch('https://free.currencyconverterapi.com/api/v5/currencies')
+    .then( res => {
+      console.log('We Are Ready To Setup Your App!');
+      res.json().then(data => {
+        for(const results in data){
+          if(data.hasOwnProperty(results)){
+            const currencies = data[results];
+            for (const currency in currencies) {
+              
+              if (currencies.hasOwnProperty(currency)) {
+                // console.log(data);
+                const data = currencies[currency];
+
+                // Saving curencies to idb
+                getDB.then( db => {
+                  if(!db) return;
+
+                  const tranx = db.transaction(['currencies'], 'readwrite');
+                  const currencyStore = tranx.objectStore('currencies');
+
+                  currencyStore.put(data, currency);
+                  
+                  createSelectOptions(data);
+                })
+
+              }
+              
+            }
+
+            console.log('All Good AppData Setup Complete! Enjoy');
+            
+            return;
+          }
+        }
+      });
+  })
+  .catch(err => {
+    console.log('Something went wrong!');
+    // appSetup();
+  });
+
 }
 
 

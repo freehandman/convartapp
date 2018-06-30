@@ -1,15 +1,24 @@
 
 body{
+  position: relative;
   padding: 0;
   margin: 0;
 }
-.overlay{
-  position: relative;
-  height: 100vh;
+#welcome{
+  position: absolute;
+  content: ' ';
   width: 100vw;
+  height: 100vh;
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.overlay::before{
+.content{
+  text-align: center;
+}
+/* .overlay::before{
   position: absolute;
   content: ' ';
   top: 0;
@@ -18,4 +27,4 @@ body{
   right: 0;
   background-color: aqua;
   display: none;
-}
+} */
