@@ -1,6 +1,6 @@
 const convartAppStaticCache = 'static-AppCache';
 const convartAppCoreCache = 'core-AppCache';
-const currencyData = 'currencyData';
+const rates = 'rates';
 // const openDB = openDatabase();
 
 self.addEventListener('install', event => {
@@ -8,6 +8,7 @@ self.addEventListener('install', event => {
   // Caching App Pages
   event.waitUntil(
     caches.open(convartAppStaticCache).then(cache => cache.addAll([
+        '/',
         '/index.html',
         '/src/js/idb.js',
         '/src/js/app.js',
@@ -18,25 +19,42 @@ self.addEventListener('install', event => {
 });
 
 
-function saveDataRequest(request) {
+self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
 
-  // Save request in cache and return response
-  const saveRequestRes = fetch(request).then(res => {
-    caches.open(convartAppCoreCache).then(cache => cache.put(request, res));
-    return res;
-  });
+  if (requestUrl.origin === location.origin) {
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        return response || fetch(event.request);
+      })
+    );
+    
+  }
 
-  return caches.match(request).then(response => response || saveRequestRes);
-}
+
+  event.respondWith(getData(event.request));
+
+});
+
+// function saveDataRequest(request) {
+
+//   // Save request in cache and return response
+//   const saveRequestRes = fetch(request).then(res => {
+//     caches.open(convartAppCoreCache).then(cache => cache.put(request, res));
+//     return res;
+//   });
+
+//   return caches.match(request).then(response => response || saveRequestRes);
+// }
 
 function getData(request){
 
-    const currencyResponseData = fetch(request).then(res => {
-      caches.open(currencyData).then(cache => cache.put(request, res));
+    const rateResponse = fetch(request).then(res => {
+      caches.open(rates).then(cache => cache.put(request, res.clone()));
 
       return res;
     });
 
-    return caches.match(request).then(response => response ||  currencyResponseData);
+    return caches.match(request).then(response => response ||  rateResponse);
 
 }
