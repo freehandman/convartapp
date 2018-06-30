@@ -6,7 +6,7 @@
 const convartAppStaticCache = 'static-AppCache';
 const convartAppCoreCache = 'core-AppCache';
 const currencyData = 'currencyData';
-const openDB = openDatabase();
+// const openDB = openDatabase();
 
 self.addEventListener('install', event => {
 
