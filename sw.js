@@ -24,7 +24,9 @@ self.addEventListener('install', event => {
 
       // Caching curency Data
       fetch('https://free.currencyconverterapi.com/api/v5/currencies')
+      
         .then(res => {
+        alert('im doing it);
           res.json()
           .then(data => {
             for(const results in data){
