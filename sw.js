@@ -4,8 +4,8 @@ self.importScripts('/src/js/idb.js');
 // 1
 
 // Caching App 
-const convartAppStaticCache = 'staticAppCache';
-const convartAppCoreCache = 'coreAppCache';
+const convartAppStaticCache = 'static-AppCache';
+const convartAppCoreCache = 'core-AppCache';
 const currencyData = 'currencyData';
 const openDB = openDatabase();
 
@@ -61,12 +61,20 @@ self.addEventListener('install', event => {
 });
 
 
-// self.addEventListener('activate', function(event) {
-//   event.waitUntil(
-//     // delete old cache
-//     // create new cache
-//   );
-// });
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.filter(function(cacheName) {
+          return cacheName.startsWith('static-') &&
+                 !allCaches.includes(cacheName);
+        }).map(function(cacheName) {
+          return caches.delete(cacheName);
+        })
+      );
+    })
+  );
+});
 
 self.addEventListener('fetch', function (event) {
   let requestUrl = new URL(event.request.url);
@@ -77,13 +85,18 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
+  if (requestUrl.origin === location.origin) {
+    event.respondWith(caches.match(event.request).then(response => response));
+    return;
+  }
+
   event.respondWith(saveDataRequest(event.request));
 });
 
 
 function saveDataRequest(request) {
 
-  // Save request in cache and 
+  // Save request in cache and return response
   const saveRequestRes = fetch(request).then(res => {
     caches.open(convartAppCoreCache).then(cache => cache.put(request, res));
     return res;
