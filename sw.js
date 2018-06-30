@@ -26,7 +26,7 @@ self.addEventListener('install', event => {
       fetch('https://free.currencyconverterapi.com/api/v5/currencies')
       
         .then(res => {
-        alert('im doing it)
+//         alert('im doing it)
           res.json()
           .then(data => {
             for(const results in data){
