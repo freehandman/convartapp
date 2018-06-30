@@ -1,4 +1,4 @@
-self.importScripts('src/js/idb.js');
+self.importScripts('/src/js/idb.js');
 
 // 2
 
@@ -15,6 +15,7 @@ self.addEventListener('install', event => {
     caches.open(convartAppStaticCache).then(cache => {
       return cache.addAll([
         '/',
+        '/index.html',
         'src/js/idb.js',
         'src/js/app.js',
         'src/css/app.css'
