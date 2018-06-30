@@ -167,23 +167,23 @@ function getData(request){
 
 
 
-function openDatabase() {
+// function openDatabase() {
   
-  return idb.open('appDataBase', 1, upgradeDb => {
-    const curencies = upgradeDb.createObjectStore('currencies');
-    const rates = upgradeDb.createObjectStore('rates');
-  });
-}
+//   return idb.open('appDataBase', 1, upgradeDb => {
+//     const curencies = upgradeDb.createObjectStore('currencies');
+//     const rates = upgradeDb.createObjectStore('rates');
+//   });
+// }
 
 
 // saving rates
-function populatingRates(currencies) {
-  for (const fromCurrency of currencies) {
-    const fromCurrency = currency;
+// function populatingRates(currencies) {
+//   for (const fromCurrency of currencies) {
+//     const fromCurrency = currency;
 
-    for (const currency of currencies) {
-      fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${fromCurrency}_${currency}`)
-      .then()
-    }
-  }
-}
+//     for (const currency of currencies) {
+//       fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${fromCurrency}_${currency}`)
+//       .then()
+//     }
+//   }
+// }
