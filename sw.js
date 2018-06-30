@@ -1,6 +1,6 @@
 self.importScripts('/src/js/idb.js');
 
-// 2
+// 3
 
 // Caching App 
 const convartAppStaticCache = 'static-AppCache';
@@ -20,45 +20,45 @@ self.addEventListener('install', event => {
         'src/js/app.js',
         'src/css/app.css'
       ]);
-    })
-    .then(function(){
+    }))
+    // .then(function(){
 
-      // Caching curency Data
-      fetch('https://free.currencyconverterapi.com/api/v5/currencies')
+      // // Caching curency Data
+      // fetch('https://free.currencyconverterapi.com/api/v5/currencies')
       
-        .then(res => {
-          res.json()
-          .then(data => {
-            for(const results in data){
-              if(data.hasOwnProperty(results)){
-                const currencies = data[results];
-                for (const currency in currencies) {
+      //   .then(res => {
+      //     res.json()
+      //     .then(data => {
+      //       for(const results in data){
+      //         if(data.hasOwnProperty(results)){
+      //           const currencies = data[results];
+      //           for (const currency in currencies) {
                   
-                  if (currencies.hasOwnProperty(currency)) {
-                    // console.log(data);
-                    const data = currencies[currency];
-                    const openDB = openDatabase();
+      //             if (currencies.hasOwnProperty(currency)) {
+      //               // console.log(data);
+      //               const data = currencies[currency];
+      //               const openDB = openDatabase();
 
-                    // Saving curencies to idb
-                    openDB.then( db => {
-                      if(!db) return;
+      //               // Saving curencies to idb
+      //               openDB.then( db => {
+      //                 if(!db) return;
 
-                      const tranx = db.transaction(['currencies'], 'readwrite');
-                      const currencyStore = tranx.objectStore('currencies');
+      //                 const tranx = db.transaction(['currencies'], 'readwrite');
+      //                 const currencyStore = tranx.objectStore('currencies');
 
-                      currencyStore.put(data, currency);
+      //                 currencyStore.put(data, currency);
                       
-                    })
-                  }
+      //               })
+      //             }
                   
-                }
+      //           }
                 
-              }
-            }
-          });
-        })
-      })
-    )
+      //         }
+      //       }
+      //     });
+      //   })
+      // })
+    // )
 });
 
 
@@ -77,22 +77,22 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-self.addEventListener('fetch', function (event) {
-  let requestUrl = new URL(event.request.url);
-  console.log(`SW Fetching... ${requestUrl}`);
+// self.addEventListener('fetch', function (event) {
+//   let requestUrl = new URL(event.request.url);
+//   console.log(`SW Fetching... ${requestUrl}`);
 
-  if (requestUrl.pathname.endsWith('/currencies')) {
-    event.respondWith(getData(event.request));
-    return;
-  }
+//   if (requestUrl.pathname.endsWith('/currencies')) {
+//     event.respondWith(getData(event.request));
+//     return;
+//   }
 
-  if (requestUrl.origin === location.origin) {
-    event.respondWith(caches.match(event.request).then(response => response));
-    return;
-  }
+//   if (requestUrl.origin === location.origin) {
+//     event.respondWith(caches.match(event.request).then(response => response));
+//     return;
+//   }
 
-  event.respondWith(saveDataRequest(event.request));
-});
+//   event.respondWith(saveDataRequest(event.request));
+// });
 
 
 function saveDataRequest(request) {

@@ -1,7 +1,9 @@
 window.onload = appSetup;
 const getDB = getDatabase();
 
-appSetup();
+const setuapp = document.getElementById('setupapp');
+
+setuapp.addEventListener('click', appSetup());
 
 // Registering Service Worker
 if(navigator.serviceWorker){
@@ -23,52 +25,68 @@ function getDatabase() {
   });
 }
 
-// fetch('https://free.currencyconverterapi.com/api/v5/currencies')
-//   .then( res => {
 
-//     res.json().then(data => {
-//       for(const results in data){
-//         if(data.hasOwnProperty(results)){
-//           const currencies = data[results];
-//           for (const currency in currencies) {
-            
-//             if (currencies.hasOwnProperty(currency)) {
-//               // console.log(data);
-//               const data = currencies[currency];
-
-//               createSelectOptions(data);
-              
-//             }
-            
-//           }
-          
-//           return;
-//         }
-//       }
-//     });
-// })
-// .catch(err => appSetup());
 
 // App SetUp
 
 function appSetup() {
-  // Get data from idb
-  getDB.then( db => {
-    if(db){
-      alert('iIm in');
-      const tranx = db.transaction(['currencies'], 'readwrite');
-      const currencyStore = tranx.objectStore('currencies');
-      
-      return currencyStore.getAll()
-      .then(curencies => {
-        for(const data of curencies){
-          createSelectOptions(data);
+
+
+
+  fetch('https://free.currencyconverterapi.com/api/v5/currencies')
+    .then( res => {
+
+      res.json().then(data => {
+        for(const results in data){
+          if(data.hasOwnProperty(results)){
+            const currencies = data[results];
+            for (const currency in currencies) {
+              
+              if (currencies.hasOwnProperty(currency)) {
+                // console.log(data);
+                const data = currencies[currency];
+
+                // Saving curencies to idb
+                getDB.then( db => {
+                  if(!db) return;
+
+                  const tranx = db.transaction(['currencies'], 'readwrite');
+                  const currencyStore = tranx.objectStore('currencies');
+
+                  currencyStore.put(data, currency);
+                  
+                  createSelectOptions(data);
+                })
+
+              }
+              
+            }
+            
+            return;
+          }
         }
       });
-      
-    }
-    
   })
+  .catch(err => appSetup());
+
+
+  // // Get data from idb
+  // getDB.then( db => {
+  //   if(db){
+  //     // alert('iIm in');
+  //     const tranx = db.transaction(['currencies'], 'readwrite');
+  //     const currencyStore = tranx.objectStore('currencies');
+      
+  //     return currencyStore.getAll()
+  //     .then(curencies => {
+  //       for(const data of curencies){
+  //         createSelectOptions(data);
+  //       }
+  //     });
+      
+  //   }
+    
+  // })
 }
 
 
