@@ -55,7 +55,7 @@ function appSetup() {
   // Get data from idb
   getDB.then( db => {
     if(db){
-      // alert('iIm in');
+      alert('iIm in');
       const tranx = db.transaction(['currencies'], 'readwrite');
       const currencyStore = tranx.objectStore('currencies');
       
