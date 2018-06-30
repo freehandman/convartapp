@@ -8,7 +8,7 @@ self.addEventListener('install', event => {
   // Caching App Pages
   event.waitUntil(
     caches.open(convartAppStaticCache).then(cache => cache.addAll([
-        '/',
+        '/index.html',
         'src/js/idb.js',
         'src/js/app.js',
         'src/css/app.css'
