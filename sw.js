@@ -1,5 +1,5 @@
 
-self.importScripts('/src/js/idb.js');
+self.importScripts('src/js/idb.js');
 
 // 1
 
