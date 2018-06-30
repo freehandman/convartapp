@@ -7,14 +7,12 @@ self.addEventListener('install', event => {
 
   // Caching App Pages
   event.waitUntil(
-    caches.open(convartAppStaticCache).then(cache => {
-      return cache.addAll([
+    caches.open(convartAppStaticCache).then(cache => cache.addAll([
         '/',
         'src/js/idb.js',
         'src/js/app.js',
         'src/css/app.css'
-      ]);
-    })
+      ]))
   )
     
 });
