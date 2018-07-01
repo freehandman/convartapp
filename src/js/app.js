@@ -1,8 +1,6 @@
-// window.onload = appSetup;
 const getDB = getDatabase();
 const setuapp = document.getElementById('setupapp');
 const convart = document.getElementById('convart');
-// console.log(setuapp);
 
 // Registering Service Worker
 if(navigator.serviceWorker){
@@ -11,7 +9,8 @@ if(navigator.serviceWorker){
 }
 
 setuapp.addEventListener('click', event => {
-  launchLoad();
+  closeSplash();
+  // console.log(event.target);
   getDB.then( db => {
 
     // If db is populated, get from db
@@ -31,7 +30,7 @@ setuapp.addEventListener('click', event => {
           // or, fetch from network
           fetch('https://free.currencyconverterapi.com/api/v5/currencies')
             .then( res => {
-              console.log('We Are Ready To Setup Your App!');
+              console.log('We are setting up your App!');
               res.json().then(data => {
                 for(const results in data){
                   if(data.hasOwnProperty(results)){
@@ -64,6 +63,7 @@ setuapp.addEventListener('click', event => {
               .catch(err => {
                 console.log(err);
                 appSetup();
+                closeLoader();
           });
         }
       });
@@ -72,7 +72,7 @@ setuapp.addEventListener('click', event => {
     }
     
     
-  })
+  }).then(e => closeLoader())
 
 });
 
@@ -80,13 +80,19 @@ convart.addEventListener('click', event => {
   convartNow();
 });
 
-
-function launchLoad() {
+// Animation
+function closeSplash() {
   const welcome = document.getElementById('welcome');
-  welcome.style.display = 'none';
+  welcome.classList.add('fadeOutUp');
 }
 
-// Creating a idb
+// Animation
+function closeLoader() {
+  const loader = document.getElementById('loader');
+  loader.classList.add('fadeOut');
+}
+
+// Creating a idb connection
 function getDatabase() {
   if (!navigator.serviceWorker) {
     return Promise.resolve();
@@ -100,8 +106,7 @@ function getDatabase() {
 
 
 
-// App SetUp
-
+// Initial App SetUp
 function appSetup() {
   
   fetch('https://free.currencyconverterapi.com/api/v5/currencies')
@@ -114,10 +119,9 @@ function appSetup() {
             for (const currency in currencies) {
               
               if (currencies.hasOwnProperty(currency)) {
-                // console.log(data);
                 const data = currencies[currency];
 
-                // Saving curencies to idb
+                // Backup Currencies
                 getDB.then( db => {
                   if(!db) return;
 
@@ -127,7 +131,7 @@ function appSetup() {
                   currencyStore.put(data, currency);
                   
                   createSelectOptions(data);
-                })
+                }).then(e => closeLoader())
 
               }
               
@@ -142,14 +146,14 @@ function appSetup() {
   })
   .catch(err => {
     console.log('Something went wrong!');
-    // appSetup();
+    closeLoader();
   });
 
 }
 
 
 
-// Recieves data and populates to select
+// Populate to select
 function createSelectOptions({ id, currencyName, currencySymbol = id}) {
   const selectFrom = document.getElementById('selectFrom');
   const selectTo = document.getElementById('selectTo');
@@ -171,7 +175,6 @@ function convartNow() {
   getDB.then(db => {
     if(db){
       return db.transaction('rates').objectStore('rates').get(`${fromId}_${toId}`);
-      
     }
     
   }).then(foundData => {
@@ -188,6 +191,8 @@ function convartNow() {
         for(const data in result){
           if(result.hasOwnProperty(data)){
             const rate = result[data];
+            
+            // Create db backup
             getDB.then(db => {
             const tranx = db.transaction(['rates'], 'readwrite');
             tranx.objectStore('rates').put(rate,`${fromId}_${toId}` );
@@ -202,13 +207,3 @@ function convartNow() {
 
   });
 }
-
-// function getCovartData(){
-//   getDB.then(db => {
-//   })
-// }
-
-
-  // Save all combinations and rates
-
-  // Create template
