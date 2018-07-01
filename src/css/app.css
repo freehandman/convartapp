@@ -1,19 +1,20 @@
 
 body{
   position: relative;
-  /* padding: 0; */
-  /* margin: 0; */
+  padding: 0;
+  margin: 0;
 }
 #welcome, #loader{
   position: absolute;
-  content: ' ';
   width: 100vw;
   height: 100vh;
-  background-color: aqua;
+  background-color: white;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 10;
+
 }
 
 #loader{
@@ -23,4 +24,11 @@ body{
 
 .content{
   text-align: center;
+}
+
+.converter{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }

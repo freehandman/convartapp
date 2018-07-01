@@ -82,14 +82,12 @@ convart.addEventListener('click', event => {
 
 // Animation
 function closeSplash() {
-  const welcome = document.getElementById('welcome');
-  welcome.classList.add('fadeOutUp');
+  $('#welcome').fadeOut();
 }
 
 // Animation
 function closeLoader() {
-  const loader = document.getElementById('loader');
-  loader.classList.add('fadeOut');
+  $('#loader').fadeOut(3000);
 }
 
 // Creating a idb connection
