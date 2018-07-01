@@ -8,11 +8,11 @@ self.addEventListener('install', event => {
   // Caching App Pages
   event.waitUntil(
     caches.open(convartAppStaticCache).then(cache => cache.addAll([
-        '/',
-        '/index.html',
-        '/src/js/idb.js',
-        '/src/js/app.js',
-        '/src/css/app.css',
+        '/convartapp',
+        '/convartapp/index.html',
+        '/convartapp/src/js/idb.js',
+        '/convartapp/src/js/app.js',
+        '/convartapp/src/css/app.css',
         'https://fonts.googleapis.com/icon?family=Material+Icons',
         'https://code.getmdl.io/1.3.0/material.indigo-pink.min.css',
         'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css',
