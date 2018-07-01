@@ -12,46 +12,68 @@ if(navigator.serviceWorker){
 
 setuapp.addEventListener('click', event => {
   launchLoad();
-  fetch('https://free.currencyconverterapi.com/api/v5/currencies')
-    .then( res => {
-      console.log('We Are Ready To Setup Your App!');
-      res.json().then(data => {
-        for(const results in data){
-          if(data.hasOwnProperty(results)){
-            const currencies = data[results];
-            for (const currency in currencies) {
-              
-              if (currencies.hasOwnProperty(currency)) {
-                // console.log(data);
-                const data = currencies[currency];
+  getDB.then( db => {
 
-                // Saving curencies to idb
-                getDB.then( db => {
-                  if(!db) return;
+    // If db is populated, get from db
+    if(db){
+                      
+      const tx = db.transaction(['currencies'], 'readwrite');
+      const currencyStore = tx.objectStore('currencies');
 
-                  const tranx = db.transaction(['currencies'], 'readwrite');
-                  const currencyStore = tranx.objectStore('currencies');
-
-                  currencyStore.put(data, currency);
-                  
-                  createSelectOptions(data);
-                })
-
-              }
-              
-            }
-
-            console.log('All Good AppData Setup Complete! Enjoy');
-            
-            return;
+      return currencyStore.getAll().then(currencies => {
+          for (const currency of currencies) {
+            createSelectOptions(currency);
           }
         }
+      ).then(results => {
+        if (!results) {
+          
+          // or, fetch from network
+          fetch('https://free.currencyconverterapi.com/api/v5/currencies')
+            .then( res => {
+              console.log('We Are Ready To Setup Your App!');
+              res.json().then(data => {
+                for(const results in data){
+                  if(data.hasOwnProperty(results)){
+                    const currencies = data[results];
+                    for (const currency in currencies) {
+                      
+                      if (currencies.hasOwnProperty(currency)) {
+                        // console.log(data);
+                        const data = currencies[currency];
+      
+                        // Saving curencies to idb
+                        const tranx = db.transaction(['currencies'], 'readwrite');
+                        const currencyStore = tranx.objectStore('currencies');
+      
+                          currencyStore.put(data, currency);
+                          
+                          createSelectOptions(data);
+                          
+                        }
+                        
+                      }
+                      
+                      console.log('All Good AppData Setup Complete! Enjoy');
+                      
+                      return;
+                    }
+                  }
+                });
+              })
+              .catch(err => {
+                console.log(err);
+                appSetup();
+          });
+        }
       });
+
+    
+    }
+    
+    
   })
-  .catch(err => {
-    console.log(err);
-    appSetup();
-  });
+
 });
 
 convart.addEventListener('click', event => {
@@ -143,35 +165,48 @@ function createSelectOptions({ id, currencyName, currencySymbol = id}) {
 function convartNow() {
   const fromId = document.getElementById('selectFrom').value;
   const toId = document.getElementById('selectTo').value;
-  fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${fromId}_${toId}&compact=y`)
-  .then(res => {
-    res.json().then( result => {
-      for(const data in result){
-        if(result.hasOwnProperty(data)){
-          const rate = result[data];
-          const results = document.getElementById('results');
-          const amount = document.getElementById('amount').value;
-          
-          // Saving curencies to idb
-          // getDB.then( db => {
-          //   if(db) {};
+  const results = document.getElementById('results');
+  const amount = document.getElementById('amount').value;
 
-          //   const tranx = db.transaction(['rates'], 'readwrite');
-          //   const currencyStore = tranx.objectStore('rates');
-
-          //   currencyStore.put(data, currency);
-            
-          //   createSelectOptions(data);
-          // })
+  getDB.then(db => {
+    if(db){
+      return db.transaction('rates').objectStore('rates').get(`${fromId}_${toId}`);
+      
+    }
+    
+  }).then(foundData => {
+    if(foundData){
+      
+      results.textContent = `${amount * foundData.val} ${toId}`;
+      return;
+    }
 
 
-          results.textContent = `${amount * rate.val} ${toId}`;
+    fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${fromId}_${toId}&compact=y`)
+    .then(res => {
+      res.json().then( result => {
+        for(const data in result){
+          if(result.hasOwnProperty(data)){
+            const rate = result[data];
+            getDB.then(db => {
+            const tranx = db.transaction(['rates'], 'readwrite');
+            tranx.objectStore('rates').put(rate,`${fromId}_${toId}` );
+            })
+
+            results.textContent = `${amount * rate.val} ${toId}`;
+            return;
+          }
         }
-      }
-    })
+      })
+    });
+
   });
 }
 
+// function getCovartData(){
+//   getDB.then(db => {
+//   })
+// }
 
 
   // Save all combinations and rates

@@ -3,6 +3,7 @@ const convartAppCoreCache = 'core-AppCache';
 const rates = 'rates';
 // const openDB = openDatabase();
 
+
 self.addEventListener('install', event => {
 
   // Caching App Pages
@@ -54,7 +55,7 @@ function getData(request){
         return res;
       });
 
-      return rateResponse || response;
+      return response || rateResponse;
     });
   });
 
