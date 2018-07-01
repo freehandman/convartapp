@@ -21,18 +21,14 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
-
-  if (requestUrl.origin === location.origin) {
-    event.respondWith(
-      caches.match(event.request).then(function(response) {
-        return response || fetch(event.request);
-      })
-    );
-    
-  }
-
-
-  event.respondWith(getData(event.request));
+  console.log('I\'m here New Fetch');
+  
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      console.log('I\'m here New IN origin');
+      return response || getData(event.request);
+    })
+  );
 
 });
 
@@ -49,12 +45,17 @@ self.addEventListener('fetch', event => {
 
 function getData(request){
 
-    const rateResponse = fetch(request).then(res => {
-      caches.open(rates).then(cache => cache.put(request, res.clone()));
+  console.log('I\'m here');
+  return caches.open(rates).then(cache => {
+    return caches.match(request).then(response => {
+      
+      const rateResponse = fetch(request).then(res => {
+        cache.put(request, res.clone());
+        return res;
+      });
 
-      return res;
+      return rateResponse || response;
     });
-
-    return caches.match(request).then(response => response ||  rateResponse);
+  });
 
 }

@@ -1,8 +1,7 @@
 // window.onload = appSetup;
 const getDB = getDatabase();
-
 const setuapp = document.getElementById('setupapp');
-
+const convart = document.getElementById('convart');
 // console.log(setuapp);
 
 // Registering Service Worker
@@ -53,6 +52,10 @@ setuapp.addEventListener('click', event => {
     console.log(err);
     appSetup();
   });
+});
+
+convart.addEventListener('click', event => {
+  convartNow();
 });
 
 
@@ -125,18 +128,49 @@ function appSetup() {
 
 
 // Recieves data and populates to select
-  function createSelectOptions({ id, currencyName, currencySymbol = id}) {
-    const selectFrom = document.getElementById('selectFrom');
-    const selectTo = document.getElementById('selectTo');
-    const option = document.createElement('option');
-    const innerText = document.createTextNode(`(${currencySymbol}) ${currencyName}`);
-    option.value = id;
-    option.appendChild(innerText);
-    selectFrom.appendChild(option.cloneNode(true));
-    selectTo.appendChild(option);
-    return;
-  }
+function createSelectOptions({ id, currencyName, currencySymbol = id}) {
+  const selectFrom = document.getElementById('selectFrom');
+  const selectTo = document.getElementById('selectTo');
+  const option = document.createElement('option');
+  const innerText = document.createTextNode(`(${currencySymbol}) ${currencyName}`);
+  option.value = id;
+  option.appendChild(innerText);
+  selectFrom.appendChild(option.cloneNode(true));
+  selectTo.appendChild(option);
+  return;
+}
 
+function convartNow() {
+  const fromId = document.getElementById('selectFrom').value;
+  const toId = document.getElementById('selectTo').value;
+  fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${fromId}_${toId}&compact=y`)
+  .then(res => {
+    res.json().then( result => {
+      for(const data in result){
+        if(result.hasOwnProperty(data)){
+          const rate = result[data];
+          const results = document.getElementById('results');
+          const amount = document.getElementById('amount').value;
+          
+          // Saving curencies to idb
+          // getDB.then( db => {
+          //   if(db) {};
+
+          //   const tranx = db.transaction(['rates'], 'readwrite');
+          //   const currencyStore = tranx.objectStore('rates');
+
+          //   currencyStore.put(data, currency);
+            
+          //   createSelectOptions(data);
+          // })
+
+
+          results.textContent = `${amount * rate.val} ${toId}`;
+        }
+      }
+    })
+  });
+}
 
 
 
